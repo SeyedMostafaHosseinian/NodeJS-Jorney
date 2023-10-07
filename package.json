@@ -1,0 +1,8 @@
+{
+  "name": "Node-js-jorney",
+  "version": "1.0.0",
+  "description": "train project for learn node-js ",
+  "main": "main.js",
+  "author": "SeyedMostafaHosseinian",
+  "license": "MIT"
+}
