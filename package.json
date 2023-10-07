@@ -4,5 +4,17 @@
   "description": "train project for learn node-js ",
   "main": "main.js",
   "author": "SeyedMostafaHosseinian",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "start:dev": "yarn nodemon",
+    "build": "rimraf ./build && tsc",
+    "start": "yarn build && node build/main.js"
+
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "rimraf": "^5.0.5",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
 }
