@@ -1,6 +1,4 @@
 import express from 'express';
-import './example';
-
 export const app = express();
 
 app.listen(3000);
