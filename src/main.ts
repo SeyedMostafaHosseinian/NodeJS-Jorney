@@ -12,3 +12,5 @@ function runService() {
         res.send('Welcome to node app')
     })
 }
+
+// runService();
