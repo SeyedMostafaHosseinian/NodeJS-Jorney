@@ -1,16 +1,27 @@
-import express from 'express';
-
+import express, {Express} from 'express';
+import dotenv from 'dotenv';
+const cors = require('cors')
 export const app = express();
 
-/** for run train files. if you want test and train, uncomment import of your target file in follow file **/
-import './async-programming/train-main';
-import './working-with-files/work-with-files-train';
-
 function runService() {
-    app.listen(3000);
+    configENV();
+    const port = process.env['PORT'];
+    const appName = process.env['APP_NAME'];
+    applyMiddlewares(app);
+    app.listen(port, () => {
+        console.log('App successfully started on port: ' + port)
+    });
     app.get('/', (req, res, next) => {
-        res.send('Welcome to node app')
+        res.send(`Welcome to ${appName} App`)
     })
 }
 
-// runService();
+runService();
+
+function applyMiddlewares(app: Express) {
+    app.use(cors())
+}
+
+function configENV() {
+    dotenv.config();
+}
