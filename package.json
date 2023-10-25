@@ -8,7 +8,8 @@
   "scripts": {
     "start:dev": "yarn nodemon",
     "build": "rimraf ./build && tsc",
-    "start": "yarn build && node build/main.js"
+    "start": "yarn build && node build/main.js",
+    "start:postgres": "docker compose -f ./deps/postgress/docker-compose.yaml up"
   },
   "devDependencies": {
     "@types/express": "^4.17.18",
