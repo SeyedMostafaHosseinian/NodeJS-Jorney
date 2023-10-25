@@ -1,4 +1,5 @@
 console.log('\n-----decorators file is running-------\n');
+import 'reflect-metadata';
 
 //class decorator
 function StoreBorn() {
@@ -45,6 +46,57 @@ function methodDecorator(replaceDecoratorFunction: boolean) {
     }
 }
 
+const metadataKey = 'required-12';
+
+// function addToRequiredLists(uniqueName: string) {
+//     console.log('addToRequiredLists');
+//     return function (target?: any, propertyKey?: string, parameterIndex?: number) {
+//         const listOfRequireds = Reflect.getMetadata(metadataKey, target) || [];
+//         listOfRequireds.push(uniqueName)
+//         Reflect.defineMetadata(metadataKey, listOfRequireds, target, propertyKey as string);
+//     }
+//
+// }
+//
+// function validate() {
+//     return function (target?: any, propertyKey?: string) {
+//         const listOfRequireds = Reflect.getOwnMetadata(metadataKey, target, propertyKey as string);
+//         console.log(listOfRequireds);
+//     }
+// }
+
+
+const requiredMetadataKey = Symbol('required');
+const globalTarget = {};
+const globalPropertyKey = 'GLOBAL_PROPERTY_KEY';
+
+export function required() {
+    return function (target: Object, propertyKey: string | symbol, parameterIndex: number) {
+        console.log('propertyKey:', propertyKey)
+        let requiredParameters: number[] = Reflect.getMetadata(requiredMetadataKey, target, propertyKey) || [];
+        requiredParameters.push(parameterIndex);
+        Reflect.defineMetadata(requiredMetadataKey, requiredParameters, target, propertyKey);
+    }
+}
+
+export function validate() {
+    return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+        let method = descriptor.value!;
+        descriptor.value = function () {
+            let requiredParameters: number[] = Reflect.getMetadata(requiredMetadataKey, target, propertyKey);
+            console.log(requiredParameters)
+            if (requiredParameters) {
+                for (let parameterIndex of requiredParameters) {
+                    if (parameterIndex >= arguments.length || arguments[parameterIndex] === undefined) {
+                        throw new Error("Missing required argument.");
+                    }
+                }
+            }
+            return method.apply(this, arguments);
+        };
+    }
+}
+
 @StoreBorn()
 class Car {
     @propertyDecorator()
@@ -54,12 +106,18 @@ class Car {
         this.speed = speedArg;
     }
 
-    @methodDecorator(true)
-    log(@parameterDecorator() mes: string) {
+    @validate()
+    log(@required() arg1?: string, @required() arg2?: number) {
         console.log('hello from log function')
+    }
+
+    @validate()
+    log2(@required() arg1?: string, @required() arg2?: number) {
+        console.log('hello from log2 function')
     }
 }
 
 
-const myCar = new Car( 200);
-myCar.log('g');
+const myCar = new Car(200);
+myCar.log('g', 12);
+myCar.log2('g', 10);
