@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 const cors = require('cors')
 export const app = express();
 
-import './decorators/decorators';
 
 function runService() {
     configENV();

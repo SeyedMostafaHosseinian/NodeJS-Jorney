@@ -1,4 +1,4 @@
-console.log('\n-----decorators file is running-------\n');
+console.log('\n-----decorators-train file is running-------\n');
 import 'reflect-metadata';
 
 //class decorator
