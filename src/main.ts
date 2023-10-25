@@ -3,6 +3,8 @@ import dotenv from 'dotenv';
 const cors = require('cors')
 export const app = express();
 
+import './decorators/decorators';
+
 function runService() {
     configENV();
     const port = process.env['PORT'];
@@ -16,8 +18,7 @@ function runService() {
     })
 }
 
-runService();
-
+// runService();
 function applyMiddlewares(app: Express) {
     app.use(cors())
 }
