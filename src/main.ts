@@ -3,6 +3,13 @@ import dotenv from 'dotenv';
 const cors = require('cors')
 export const app = express();
 
+function applyMiddlewares(app: Express) {
+    app.use(cors())
+}
+
+function configENV() {
+    dotenv.config();
+}
 
 function runService() {
     configENV();
@@ -18,10 +25,3 @@ function runService() {
 }
 
 // runService();
-function applyMiddlewares(app: Express) {
-    app.use(cors())
-}
-
-function configENV() {
-    dotenv.config();
-}
