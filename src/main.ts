@@ -1,7 +1,7 @@
 import express, {Express} from 'express';
 import 'reflect-metadata';
 import dotenv from 'dotenv';
-import {createDataSource} from "./db/data-source";
+import {AppDataSource} from "./db/data-source";
 
 const cors = require('cors')
 export const app = express();
@@ -16,7 +16,7 @@ function configENV() {
 
 function connectToDatabase() {
     console.log('connecting to the database...')
-    return createDataSource().initialize()
+    return AppDataSource.createDataSource().initialize()
 }
 
 async function startService() {
