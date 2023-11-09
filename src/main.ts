@@ -1,13 +1,18 @@
 import express, {Express} from 'express';
 import 'reflect-metadata';
 import dotenv from 'dotenv';
+import bodyParser from 'body-parser';
 import {AppDataSource} from "./db/data-source";
+import {UserController} from "./controlers/user.controller";
 
-const cors = require('cors')
+const cors = require('cors');
 export const app = express();
 
 function applyMiddlewares(app: Express) {
-    app.use(cors())
+    app
+        .use(cors())
+        .use(bodyParser.json())
+        .use(bodyParser.urlencoded({extended: true}))
 }
 
 function configENV() {
@@ -30,12 +35,16 @@ async function startService() {
         .then(() => console.log('connected to the database successfully!'))
         .catch(() => console.log('connection to database is failed!!'));
     /** listening  **/
-    await app.listen(port, () => {
+    app.listen(port, () => {
         console.log(`[${appName}] App successfully started on port: [${port}] `)
     });
-    app.get('/', (req, res, next) => {
-        res.send(`Welcome to ${appName} App`)
+
+    /** start controllers **/
+    app.get('/', async (req, res, next) => {
+        res.send(`Welcome to ${appName} App`) 
     })
+
+    new UserController('/users');
 }
 
 startService();

@@ -1,4 +1,7 @@
 import {DataSource} from "typeorm";
+import {UserEntity} from "./entities/user.entity";
+import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
+import { join } from "path";
 
 export abstract class AppDataSource {
     public static dataSource: DataSource;
@@ -12,11 +15,11 @@ export abstract class AppDataSource {
             password: process.env.DB_PASSWORD,
             database: process.env.DB_NAME,
             synchronize: true,
-            logging: true,
-            entities: [],
+            logging: false,
+            entities: ['src/db/entities/**/*.ts',],
             subscribers: [],
             migrations: [],
-        })
+        } as PostgresConnectionOptions)
         return this.dataSource;
     }
 }
