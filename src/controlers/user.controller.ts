@@ -108,7 +108,6 @@ export class UserController implements BaseController {
     private _deleteUserListener() {
         app.delete(`${this.baseRoute}/delete-user`, async (req, res, next) => {
             const {email} = req.body;
-            console.log(email);
             if (!email) {
                 res
                     .status(400)
