@@ -12,7 +12,8 @@ export class UserController implements BaseController {
         this._getUsersListener();
         this._createUserListener();
         this._updateUserListener();
-        this._findUserListener()
+        this._findUserListener();
+        this._deleteUserListener();
     }
 
     private _getUsersListener() {
@@ -23,8 +24,22 @@ export class UserController implements BaseController {
     }
 
     private _createUserListener() {
-        app.post(`${this.baseRoute}/add`, (req, res, next) => {
-            const {age, password, username, job, phoneNumber, email} = req.query;
+        app.post(`${this.baseRoute}/add`, async (req, res, next) => {
+            const {age, password, username, job, phoneNumber, email} = req.body;
+
+            //check for avoid insert iterate email or phoneNumber
+            const exists = await this.userRepository
+                .createQueryBuilder('user')
+                .where('user.email = :email', {email: email})
+                .orWhere('user.phoneNumber = :phoneNumber', {phoneNumber: phoneNumber})
+                .getMany();
+            if (exists && exists?.length) {
+                res
+                    .status(409)
+                    .send('User already exist');
+                return;
+            }
+
             const user = new UserEntity();
             if (req.query && age && password && username && job && phoneNumber && email) {
                 user.age = +age;
@@ -67,20 +82,53 @@ export class UserController implements BaseController {
 
     private _updateUserListener() {
         app.patch(`${this.baseRoute}/update-user/:email`, async (req, res, next) => {
-            const { email} = req.params
+            const {email} = req.params
             const newData = req.body as UserEntity
             const currentUserData = await this.userRepository.findOneBy({email});
-            if(
-                currentUserData?.age && 
-                currentUserData?.job && 
-                newData?.age && 
-                newData?.job
-            ) {
-                currentUserData.age = newData.age;
-                currentUserData.job = newData.job; 
-                const newUser = await this.userRepository.save(currentUserData)
-                res.send(newUser);
+            if (currentUserData) {
+                if (
+                    currentUserData?.age &&
+                    currentUserData?.job &&
+                    newData?.age &&
+                    newData?.job
+                ) {
+                    currentUserData.age = newData.age;
+                    currentUserData.job = newData.job;
+                    const newUser = await this.userRepository.save(currentUserData)
+                    res.send(newUser);
+                }
+            } else {
+                res.status(404);
+                res.send('User not found');
+            }
+
+        })
+    }
+
+    private _deleteUserListener() {
+        app.delete(`${this.baseRoute}/delete-user`, async (req, res, next) => {
+            const {email} = req.body;
+            console.log(email);
+            if (!email) {
+                res
+                    .status(400)
+                    .send('Bad Request');
+
+                return;
+            }
+
+            const user = await this.userRepository.findOneBy({email: email});
+            if (user) {
+                const deletedUser = await this.userRepository.remove(user as UserEntity)
+                res
+                    .status(200)
+                    .send(user)
+
+            } else {
+                res
+                    .status(404)
+                    .send('User not found')
             }
         })
-    } 
+    }
 }
