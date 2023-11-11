@@ -1,4 +1,5 @@
-import {Column, Entity, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
+import {Column, Entity, JoinColumn, OneToOne, PrimaryColumn, PrimaryGeneratedColumn} from "typeorm";
+import {PassportEntity} from "./passport.entity";
 
 @Entity()
 export class UserEntity {
@@ -14,7 +15,7 @@ export class UserEntity {
     @Column()
     job: string;
 
-    @Column ()
+    @Column()
     password: string;
 
     @PrimaryColumn()
@@ -22,4 +23,8 @@ export class UserEntity {
 
     @PrimaryColumn()
     phoneNumber: string
+
+    @OneToOne(() => PassportEntity, (passport) => passport.user)
+    @JoinColumn()
+    passport: PassportEntity
 }

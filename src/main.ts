@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
 import {AppDataSource} from "./db/data-source";
 import {UserController} from "./controlers/user.controller";
+import {PassportController} from "./controlers/passport.controller";
 
 const cors = require('cors');
 export const app = express();
@@ -45,6 +46,7 @@ async function startService() {
     })
 
     new UserController('/users');
+    new PassportController('/passport');
 }
 
 startService();

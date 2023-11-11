@@ -2,9 +2,8 @@ import {app} from "../main";
 import {AppDataSource} from "../db/data-source";
 import {UserEntity} from "../db/entities/user.entity";
 import {Repository} from "typeorm";
-import {BaseController} from "./base.controller";
 
-export class UserController implements BaseController {
+export class UserController {
     userRepository: Repository<UserEntity>
 
     constructor(public baseRoute: string) {
@@ -18,7 +17,7 @@ export class UserController implements BaseController {
 
     private _getUsersListener() {
         app.get(`${this.baseRoute}`, async (req, res, next) => {
-            const users = await this.userRepository.find();
+            const users = await this.userRepository.find({relations: {passport: true}});
             res.send(users)
         })
     }
