@@ -39,7 +39,7 @@ export class TaskController {
         app.post(
             `${this.baseRoute}`,
             async (req, res, next) => {
-                const {userEmail, title, description, taskId} = req.body
+                const {userEmail, title, description, status, taskId} = req.body
                 let user: UserEntity | null = null;
 
                 if (!taskId) {
@@ -65,6 +65,8 @@ export class TaskController {
                 task.title = title || '';
                 task.description = description || '';
                 task.displayId = taskId;
+                if (Object.values(TaskStatusEnum).includes(status))
+                    task.status = status
 
                 if (user) task.assignee = user;
 
