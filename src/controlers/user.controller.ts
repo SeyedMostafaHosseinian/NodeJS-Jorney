@@ -2,12 +2,16 @@ import {app} from "../main";
 import {AppDataSource} from "../db/data-source";
 import {UserEntity} from "../db/entities/user.entity";
 import {Repository} from "typeorm";
+import {TaskEntity} from "../db/entities/task.entity";
 
 export class UserController {
     userRepository: Repository<UserEntity>
+    taskRepository: Repository<TaskEntity>
 
     constructor(public baseRoute: string) {
         this.userRepository = AppDataSource.dataSource.getRepository(UserEntity);
+        this.taskRepository = AppDataSource.dataSource.getRepository(TaskEntity);
+
         this._getUsersListener();
         this._createUserListener();
         this._updateUserListener();
@@ -17,7 +21,12 @@ export class UserController {
 
     private _getUsersListener() {
         app.get(`${this.baseRoute}`, async (req, res, next) => {
-            const users = await this.userRepository.find({relations: {passport: true}});
+            const users = await this.userRepository.find({
+                relations: {
+                    passport: true,
+                    tasks: true
+                }
+            });
             res.send(users)
         })
     }
@@ -115,12 +124,19 @@ export class UserController {
                 return;
             }
 
-            const user = await this.userRepository.findOneBy({email: email});
+            const user = await this.userRepository.findOne({
+                where: {email: email},
+                relations: {passport: true, tasks: true}
+            });
+
             if (user) {
-                const deletedUser = await this.userRepository.remove(user as UserEntity)
-                res
-                    .status(200)
-                    .send(user)
+                const userTasks = await this.taskRepository.find({where: {assignee: user}});
+
+                this.userRepository.remove(user as UserEntity).then(u => {
+                    res
+                        .status(200)
+                        .send(u)
+                })
 
             } else {
                 res

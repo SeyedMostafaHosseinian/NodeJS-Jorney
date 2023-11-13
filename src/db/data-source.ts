@@ -1,7 +1,5 @@
 import {DataSource} from "typeorm";
-import {UserEntity} from "./entities/user.entity";
 import {PostgresConnectionOptions} from "typeorm/driver/postgres/PostgresConnectionOptions";
-import { join } from "path";
 
 export abstract class AppDataSource {
     public static dataSource: DataSource;

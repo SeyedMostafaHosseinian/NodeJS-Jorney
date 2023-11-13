@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import {AppDataSource} from "./db/data-source";
 import {UserController} from "./controlers/user.controller";
 import {PassportController} from "./controlers/passport.controller";
+import {TaskController} from "./controlers/task.controller";
 
 const cors = require('cors');
 export const app = express();
@@ -34,7 +35,7 @@ async function startService() {
     /** connecting to the database **/
     await connectToDatabase()
         .then(() => console.log('connected to the database successfully!'))
-        .catch(() => console.log('connection to database is failed!!'));
+        .catch((e) => console.log('connection to database is failed!!',e));
     /** listening  **/
     app.listen(port, () => {
         console.log(`[${appName}] App successfully started on port: [${port}] `)
@@ -47,6 +48,7 @@ async function startService() {
 
     new UserController('/users');
     new PassportController('/passport');
+    new TaskController('/tasks')
 }
 
 startService();
