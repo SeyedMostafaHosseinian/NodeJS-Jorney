@@ -9,7 +9,10 @@
     "start:dev": "yarn nodemon",
     "build": "rimraf ./build && tsc",
     "start": "yarn build && node build/main.js",
-    "start:postgres": "docker compose -f ./deps/postgres/docker-compose.yaml up"
+    "start:postgres": "docker compose -f ./deps/postgres/docker-compose.yaml up",
+    "migration:run":"typeorm-ts-node-esm migration:run -d ./src/db/data-source.ts",
+    "migration:revert":"typeorm-ts-node-esm migration:revert -d ./src/db/data-source.ts",
+    "migration:generate":"typeorm-ts-node-esm migration:generate ./src/db/migrations/migration -d ./src/db/data-source.ts"
   },
   "devDependencies": {
     "@types/express": "^4.17.18",

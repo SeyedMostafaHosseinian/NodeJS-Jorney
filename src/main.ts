@@ -2,7 +2,7 @@ import express, {Express} from 'express';
 import 'reflect-metadata';
 import dotenv from 'dotenv';
 import bodyParser from 'body-parser';
-import {AppDataSource} from "./db/data-source";
+import dataSource from './db/data-source';
 import {UserController} from "./controlers/user.controller";
 import {PassportController} from "./controlers/passport.controller";
 import {TaskController} from "./controlers/task.controller";
@@ -22,8 +22,8 @@ function configENV() {
 }
 
 function connectToDatabase() {
-    console.log('connecting to the database...')
-    return AppDataSource.createDataSource().initialize()
+    console.log('connecting to the database...');
+    return dataSource.initialize()
 }
 
 async function startService() {

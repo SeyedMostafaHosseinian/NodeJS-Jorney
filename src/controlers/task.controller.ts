@@ -1,6 +1,6 @@
 import {Repository} from "typeorm";
 import {TaskEntity} from "../db/entities/task.entity";
-import {AppDataSource} from "../db/data-source";
+import dataSource from "../db/data-source";
 import {app} from "../main";
 import {UserEntity} from "../db/entities/user.entity";
 import {TaskStatusEnum} from "../db/interfaces";
@@ -10,8 +10,8 @@ export class TaskController {
     userRepository: Repository<UserEntity>
 
     constructor(public baseRoute: string) {
-        this.taskRepository = AppDataSource.dataSource.getRepository(TaskEntity);
-        this.userRepository = AppDataSource.dataSource.getRepository(UserEntity);
+        this.taskRepository = dataSource.getRepository(TaskEntity);
+        this.userRepository = dataSource.getRepository(UserEntity);
 
         this._getAllTasksListener();
         this._addNewTaskListener();
