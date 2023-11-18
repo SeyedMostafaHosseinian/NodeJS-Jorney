@@ -86,7 +86,6 @@ export class AuthController {
         res.status(404).send("user not found");
         return;
       }
-      console.log(user);
 
       const validation = await bycrypt.compare(password, user.password);
       if (validation) {
