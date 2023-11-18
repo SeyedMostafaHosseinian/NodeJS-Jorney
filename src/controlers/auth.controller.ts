@@ -3,8 +3,9 @@ import dataSource from "../db/data-source";
 import { UserEntity } from "../db/entities/user.entity";
 import { Repository } from "typeorm";
 import { TaskEntity } from "../db/entities/task.entity";
+import bycrypt from "bcrypt";
 
-export class UserController {
+export class AuthController {
   userRepository: Repository<UserEntity>;
   taskRepository: Repository<TaskEntity>;
 
@@ -13,7 +14,8 @@ export class UserController {
     this.taskRepository = dataSource.getRepository(TaskEntity);
 
     this._getUsersListener();
-    this._createUserListener();
+    this._signupListener();
+    this._loginListener();
     this._updateUserListener();
     this._findUserListener();
     this._deleteUserListener();
@@ -31,8 +33,8 @@ export class UserController {
     });
   }
 
-  private _createUserListener() {
-    app.post(`${this.baseRoute}/add`, async (req, res, next) => {
+  private _signupListener() {
+    app.post(`${this.baseRoute}/signup`, async (req, res, next) => {
       const { age, password, username, job, phoneNumber, email } = req.body;
 
       //check for avoid insert iterate email or phoneNumber
@@ -60,7 +62,7 @@ export class UserController {
       ) {
         user.age = +age;
         user.username = username as string;
-        user.password = password as string;
+        user.password = await bycrypt.hash(password, 10);
         user.job = job as string;
         user.email = email as string;
         user.phoneNumber = phoneNumber as string;
@@ -69,6 +71,29 @@ export class UserController {
         });
       } else {
         res.status(400).send("Bad Request");
+      }
+    });
+  }
+  private _loginListener() {
+    app.get(`${this.baseRoute}/login`, async (req, res, next) => {
+      const { password, email } = req.body;
+      if (!email || !password) {
+        res.status(400).send("Bad Request");
+        return;
+      }
+      const user = await this.userRepository.findOneBy({ email: email });
+      if (!user) {
+        res.status(404).send("user not found");
+        return;
+      }
+      console.log(user);
+
+      const validation = await bycrypt.compare(password, user.password);
+      if (validation) {
+        res.status(200).send(user);
+        return;
+      } else {
+        res.status(401).send("password is invalid");
       }
     });
   }

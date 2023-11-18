@@ -10,11 +10,12 @@
     "build": "rimraf ./build && tsc",
     "start": "yarn build && node build/main.js",
     "start:postgres": "docker compose -f ./deps/postgres/docker-compose.yaml up",
-    "migration:run":"typeorm-ts-node-esm migration:run -d ./src/db/data-source.ts",
-    "migration:revert":"typeorm-ts-node-esm migration:revert -d ./src/db/data-source.ts",
-    "migration:generate":"typeorm-ts-node-esm migration:generate ./src/db/migrations/migration -d ./src/db/data-source.ts"
+    "migration:run": "typeorm-ts-node-esm migration:run -d ./src/db/data-source.ts",
+    "migration:revert": "typeorm-ts-node-esm migration:revert -d ./src/db/data-source.ts",
+    "migration:generate": "typeorm-ts-node-esm migration:generate ./src/db/migrations/migration -d ./src/db/data-source.ts"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/express": "^4.17.18",
     "@types/node": "^20.8.10",
     "nodemon": "^3.0.1",
@@ -23,6 +24,7 @@
     "typescript": "^4.5.2"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
