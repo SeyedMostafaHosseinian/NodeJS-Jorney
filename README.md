@@ -2,7 +2,6 @@
 
 **this repo is for learning important concept of NodeJS**
 
-- Error Handling
 - Async programming
 - Working with files
 - ENV
