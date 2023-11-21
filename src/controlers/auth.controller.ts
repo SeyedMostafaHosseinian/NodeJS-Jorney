@@ -4,6 +4,7 @@ import { UserEntity } from "../db/entities/user.entity";
 import { Repository } from "typeorm";
 import { TaskEntity } from "../db/entities/task.entity";
 import bycrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 export class AuthController {
   userRepository: Repository<UserEntity>;
@@ -67,7 +68,15 @@ export class AuthController {
         user.email = email as string;
         user.phoneNumber = phoneNumber as string;
         this.userRepository.save(user).then(() => {
-          res.status(201).send(user);
+          const accessTokenSecretKey = process.env.ACCESS_TOKEN_SECRET_KEY;
+          if (!accessTokenSecretKey) return;
+          const accesToken = jwt.sign({ ...user }, accessTokenSecretKey, {
+            expiresIn: process.env.TOKEN_EXPIRY || 30,
+          });
+          res
+            .status(201)
+            .cookie("accessToken", accesToken, { httpOnly: true })
+            .send(user);
         });
       } else {
         res.status(400).send("Bad Request");
@@ -75,7 +84,7 @@ export class AuthController {
     });
   }
   private _loginListener() {
-    app.get(`${this.baseRoute}/login`, async (req, res, next) => {
+    app.post(`${this.baseRoute}/login`, async (req, res, next) => {
       const { password, email } = req.body;
       if (!email || !password) {
         res.status(400).send("Bad Request");
@@ -88,8 +97,18 @@ export class AuthController {
       }
 
       const validation = await bycrypt.compare(password, user.password);
+      const accessTokenSecretKey = process.env.ACCESS_TOKEN_SECRET_KEY;
+
+      if (!accessTokenSecretKey) return;
       if (validation) {
-        res.status(200).send(user);
+        const accesToken = jwt.sign({ ...user }, accessTokenSecretKey, {
+          expiresIn: process.env.TOKEN_EXPIRY || 30,
+        });
+
+        res
+          .status(200)
+          .cookie("accessToken", accesToken, { httpOnly: true })
+          .send(user);
         return;
       } else {
         res.status(401).send("password is invalid");
@@ -144,7 +163,6 @@ export class AuthController {
       const { email } = req.body;
       if (!email) {
         res.status(400).send("Bad Request");
-
         return;
       }
 

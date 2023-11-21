@@ -6,6 +6,8 @@ import dataSource from "./db/data-source";
 import { AuthController } from "./controlers/auth.controller";
 import { PassportController } from "./controlers/passport.controller";
 import { TaskController } from "./controlers/task.controller";
+import cookieParser from 'cookie-parser';
+import { checkJWt } from "./middlewares/checkJWT.guard";
 
 const cors = require("cors");
 export const app = express();
@@ -14,7 +16,9 @@ function applyMiddlewares(app: Express) {
   app
     .use(cors())
     .use(bodyParser.json())
-    .use(bodyParser.urlencoded({ extended: true }));
+    .use(bodyParser.urlencoded({ extended: true }))
+    .use(cookieParser())
+    .use(checkJWt)
 }
 
 function configENV() {
@@ -34,8 +38,8 @@ async function startService() {
   applyMiddlewares(app);
   /** connecting to the database **/
   await connectToDatabase()
-    .then(() => console.log("connected to the database successfully!"))
-    .catch((e) => console.log("connection to database is failed!!", e));
+    .then(() => console.log("🛢️ connected to the database successfully!"))
+    .catch((e) => console.log("⚠️ connection to database is failed!!", e));
   /** listening  **/
   app.listen(port, () => {
     console.log(`[${appName}] App successfully started on port: [${port}] `);
